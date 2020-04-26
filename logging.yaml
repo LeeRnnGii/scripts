@@ -1,0 +1,43 @@
+version: 1
+formatters:
+  brief:
+    format: "[%(levelname)s]:%(module)s >>> %(filename)s >>> %(funcName)s %(message)s"
+  simple:
+    format: "[%(levelname)s]%(asctime)s:%(module)s >>> %(filename)s >>> %(funcName)s %(message)s"
+  complex:
+    format: "(pid-%(process)d tid-%(thread)d)[%(levelname)s]%(asctime)s:%(module)s >>> %(filename)s >>> %(funcName)s \
+      %(message)s
+    "
+handlers:
+  console:
+    class: logging.StreamHandler
+    formatter: brief
+    level: INFO
+    stream: ext://sys.stdout
+  file:
+    class: logging.FileHandler
+    formatter: simple
+    level: DEBUG
+    filename: ../log/debug.log
+    encoding: utf8
+  error:
+    class: logging.handlers.RotatingFileHandler
+    level: ERROR
+    formatter: complex
+    filename: ../log/error.log
+    maxBytes: 10485760
+    backupCount: 25
+    encoding: utf8
+loggers:
+  lib:
+    level: DEBUG
+    handlers: [console, file, error]
+  detector:
+    level: DEBUG
+    handlers: [console, file, error]
+  ui:
+    level: DEBUG
+    handlers: [console, error]
+  web:
+    level: DEBUG
+    handlers: [console, error]
