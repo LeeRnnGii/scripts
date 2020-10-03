@@ -1,49 +1,37 @@
 import os
-import sys
+
+from collections import Counter
+
+cnt = Counter()
+
+csv_path = "./"
+f = open(csv_path + "contents.csv", "a+", encoding='utf-8', newline='')
 
 
-content_index = 0
-file_index = 0
-csv_path = None
+def get_contents(parent_path: str = None):
+    def write(flag: str, path: str, sub_path: str):
+        cnt[flag] += 1
+        item = f"{cnt[flag]}<=>{flag}<=>{sub_path}<=>{os.path.abspath(path)}<=>{os.path.splitext(sub_path)[-1][1:]}"
+        f.write(item + "\r\n")
 
-
-def get_contents(path_name: str = None):
-
-    if os.path.exists(path_name):
-        sub_path_list = os.listdir(path_name)
+    if os.path.exists(parent_path):
+        sub_path_list = os.listdir(parent_path)
 
         for sub_path in sub_path_list:
-            path = path_name+sub_path
+            path = parent_path + sub_path
+
             if os.path.isdir(path):
-                global content_index
-                content_index = content_index+1
-                item = str(content_index)+"," + "目录" + \
-                    "," + sub_path+","+path_name
-                with open(csv_path+"contents.csv", "a+", encoding='utf-8', newline='') as f:
-                    f.write(item+"\r\n")
-                get_contents(path_name=path+"/")
+                write('dir', path, sub_path)
+                get_contents(parent_path=path + "/")
 
-            if os.path.isfile(path):
-                global file_index
-                file_index = file_index+1
-                item = str(file_index)+"," + "文件"+"," + sub_path+","+path_name
-                with open(csv_path+"contents.csv", "a+", encoding='utf-8', newline='') as f:
-                    f.write(item+"\r\n")
-
-            if os.path.islink(path):
-                pass
+            # elif os.path.isfile(path):
+            else:
+                write('file', path, sub_path)
 
     else:
-        print("该路径不存在：{}".format(path_name))
-
-
-def main():
-    global csv_path
-    csv_path = "./"
-    get_contents(
-        path_name=csv_path
-    )
+        print("该路径不存在：{}".format(parent_path))
 
 
 if __name__ == "__main__":
-    main()
+    get_contents(parent_path="./")
+    f.close()
