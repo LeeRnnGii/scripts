@@ -2,18 +2,17 @@ import os
 
 from collections import Counter
 
-cnt = Counter()
+CNT = Counter()
+CSV_PATH = "./"
 
-csv_path = "./"
-f = open(csv_path + "contents.csv", "a+", encoding='utf-8', newline='')
+
+def write(flag: str, path: str, sub_path: str, separator: str = "<=>"):
+    CNT[flag] += 1
+    item = f"{CNT[flag]}{separator}{flag}{separator}{sub_path}{separator}{os.path.abspath(path)}{separator}{os.path.splitext(sub_path)[-1][1:]}"
+    f.write(item + "\r\n")
 
 
 def get_contents(parent_path: str = None):
-    def write(flag: str, path: str, sub_path: str):
-        cnt[flag] += 1
-        item = f"{cnt[flag]}<=>{flag}<=>{sub_path}<=>{os.path.abspath(path)}<=>{os.path.splitext(sub_path)[-1][1:]}"
-        f.write(item + "\r\n")
-
     if os.path.exists(parent_path):
         sub_path_list = os.listdir(parent_path)
 
@@ -33,5 +32,5 @@ def get_contents(parent_path: str = None):
 
 
 if __name__ == "__main__":
-    get_contents(parent_path="./")
-    f.close()
+    with open(CSV_PATH + "contents.csv", "a+", encoding='utf-8', newline='') as f:
+        get_contents(parent_path="./")
